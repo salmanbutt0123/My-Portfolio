@@ -1,10 +1,41 @@
-import React, { useState } from 'react';
-import { ExternalLink, Github, Filter, Code, Database, Brain, Globe } from 'lucide-react';
-import { projects } from './mock';
+import React, { useState, useEffect } from 'react';
+import { ExternalLink, Github, Filter, Code, Database, Brain, Globe, Loader, AlertCircle } from 'lucide-react';
+import { projects as mockProjects } from './mock';
+import { projectsAPI } from '../services/api';
 
 const ProjectsSection = () => {
   const [filter, setFilter] = useState('All');
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const categories = ['All', 'Web Development', 'Programming', 'Data Science', 'Database'];
+
+  // Load projects from API
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        setLoading(true);
+        const apiProjects = await projectsAPI.getAll();
+        
+        // If no projects in database, use mock data
+        if (apiProjects.length === 0) {
+          setProjects(mockProjects);
+        } else {
+          setProjects(apiProjects);
+        }
+        setError(null);
+      } catch (err) {
+        console.error('Error loading projects:', err);
+        setError('Failed to load projects. Using sample data.');
+        // Fallback to mock data
+        setProjects(mockProjects);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProjects();
+  }, []);
 
   const filteredProjects = filter === 'All' 
     ? projects 
@@ -24,6 +55,27 @@ const ProjectsSection = () => {
         return <Code className="h-4 w-4" />;
     }
   };
+
+  if (loading) {
+    return (
+      <section id="projects" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">My Projects</h2>
+              <p className="text-xl text-gray-600">
+                Practical applications of my learning journey
+              </p>
+            </div>
+            <div className="flex justify-center items-center py-12">
+              <Loader className="h-8 w-8 animate-spin text-blue-600 mr-3" />
+              <span className="text-gray-600">Loading projects...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="projects" className="py-20 bg-white">
