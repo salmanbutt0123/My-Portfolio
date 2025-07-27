@@ -141,6 +141,13 @@ const Header = () => {
           </nav>
         )}
       </div>
+      
+      {/* Section Progress Indicator */}
+      <div className="hidden md:block absolute bottom-0 left-0 right-0">
+        <div className="bg-blue-600 h-1 transition-all duration-300" 
+             style={{ width: `${((navItems.findIndex(item => item.id === activeSection) + 1) / navItems.length) * 100}%` }}
+        ></div>
+      </div>
     </header>
   );
 };
