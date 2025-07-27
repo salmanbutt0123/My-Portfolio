@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Mail, Linkedin, MapPin, Phone, Send, CheckCircle } from 'lucide-react';
+import { Mail, Linkedin, MapPin, Phone, Send, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { personalInfo } from './mock';
+import { contactAPI } from '../services/api';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +10,9 @@ const ContactSection = () => {
     subject: '',
     message: ''
   });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -17,24 +20,69 @@ const ContactSection = () => {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (submitStatus === 'error') {
+      setSubmitStatus(null);
+      setErrorMessage('');
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    if (!formData.name.trim() || formData.name.length < 2) {
+      setErrorMessage('Name must be at least 2 characters long');
+      return false;
+    }
+    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) {
+      setErrorMessage('Please enter a valid email address');
+      return false;
+    }
+    if (!formData.subject.trim() || formData.subject.length < 5) {
+      setErrorMessage('Subject must be at least 5 characters long');
+      return false;
+    }
+    if (!formData.message.trim() || formData.message.length < 10) {
+      setErrorMessage('Message must be at least 10 characters long');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock form submission
-    console.log('Form submitted:', formData);
-    setIsSubmitted(true);
     
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
+    if (!validateForm()) {
+      setSubmitStatus('error');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    setErrorMessage('');
+
+    try {
+      await contactAPI.submit(formData);
+      setSubmitStatus('success');
+      
+      // Reset form after successful submission
       setFormData({
         name: '',
         email: '',
         subject: '',
         message: ''
       });
-    }, 3000);
+
+      // Auto-reset success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus(null);
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      setSubmitStatus('error');
+      setErrorMessage(error.message || 'Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
