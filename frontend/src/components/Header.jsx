@@ -104,21 +104,24 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Enhanced */}
         {isMenuOpen && (
-          <nav className="md:hidden mt-4 pt-4 border-t border-gray-200">
-            <div className="flex flex-col space-y-4">
+          <nav className="md:hidden mt-4 pt-4 border-t border-gray-200 bg-white rounded-lg">
+            <div className="flex flex-col space-y-2 p-4">
               {navItems.map((item) => (
-                <a
+                <button
                   key={item.name}
-                  href={item.href}
-                  className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => scrollToSection(item.href)}
+                  className={`text-left px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                    activeSection === item.id
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
                 >
                   {item.name}
-                </a>
+                </button>
               ))}
-              <div className="flex items-center space-x-4 pt-4">
+              <div className="flex items-center space-x-4 pt-4 border-t border-gray-200">
                 <a
                   href="https://www.linkedin.com/in/salman-butt-0a1a26316"
                   target="_blank"
