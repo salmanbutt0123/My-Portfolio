@@ -89,6 +89,14 @@ const ProjectsSection = () => {
             </p>
           </div>
 
+          {/* Error Alert */}
+          {error && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center space-x-3 mb-8">
+              <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
+              <p className="text-yellow-800 text-sm">{error}</p>
+            </div>
+          )}
+
           {/* Filter Buttons */}
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {categories.map((category) => (
@@ -107,50 +115,70 @@ const ProjectsSection = () => {
           </div>
 
           {/* Projects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {filteredProjects.map((project, index) => (
-              <div 
-                key={project.id}
-                className={`${project.bgColor} rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105`}
-              >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-2">
-                      {getCategoryIcon(project.category)}
-                      <span className="text-sm font-medium text-gray-600">{project.category}</span>
+          {filteredProjects.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No projects found in this category.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {filteredProjects.map((project, index) => (
+                <div 
+                  key={project.id}
+                  className={`${project.bgColor} rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105`}
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        {getCategoryIcon(project.category)}
+                        <span className="text-sm font-medium text-gray-600">{project.category}</span>
+                      </div>
+                      <div className="flex space-x-2">
+                        {project.githubUrl && (
+                          <a 
+                            href={project.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 hover:bg-white/20 rounded-full transition-colors duration-200"
+                          >
+                            <Github className="h-4 w-4 text-gray-600" />
+                          </a>
+                        )}
+                        {project.liveUrl && (
+                          <a 
+                            href={project.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 hover:bg-white/20 rounded-full transition-colors duration-200"
+                          >
+                            <ExternalLink className="h-4 w-4 text-gray-600" />
+                          </a>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex space-x-2">
-                      <button className="p-2 hover:bg-white/20 rounded-full transition-colors duration-200">
-                        <Github className="h-4 w-4 text-gray-600" />
-                      </button>
-                      <button className="p-2 hover:bg-white/20 rounded-full transition-colors duration-200">
-                        <ExternalLink className="h-4 w-4 text-gray-600" />
-                      </button>
+
+                    <h3 className={`text-xl font-bold ${project.textColor} mb-3`}>
+                      {project.title}
+                    </h3>
+                    
+                    <p className={`${project.textColor} opacity-75 leading-relaxed mb-4`}>
+                      {project.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.map((tech, techIndex) => (
+                        <span 
+                          key={techIndex}
+                          className="px-3 py-1 bg-white/20 text-sm rounded-full"
+                        >
+                          {tech}
+                        </span>
+                      ))}
                     </div>
-                  </div>
-
-                  <h3 className={`text-xl font-bold ${project.textColor} mb-3`}>
-                    {project.title}
-                  </h3>
-                  
-                  <p className={`${project.textColor} opacity-75 leading-relaxed mb-4`}>
-                    {project.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech, techIndex) => (
-                      <span 
-                        key={techIndex}
-                        className="px-3 py-1 bg-white/20 text-sm rounded-full"
-                      >
-                        {tech}
-                      </span>
-                    ))}
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Call to Action */}
           <div className="text-center mt-16">
