@@ -60,16 +60,20 @@ const Header = () => {
             <span className="text-xl font-bold text-gray-900">Muhammad Salman</span>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* Desktop Navigation - Enhanced Tab Style */}
+          <nav className="hidden md:flex items-center bg-gray-50 rounded-full px-2 py-1">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
-                className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+                onClick={() => scrollToSection(item.href)}
+                className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${
+                  activeSection === item.id
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-white'
+                }`}
               >
                 {item.name}
-              </a>
+              </button>
             ))}
           </nav>
 
